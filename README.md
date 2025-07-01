@@ -36,6 +36,12 @@ Nebo jednoduše:
 ```bash
 python3 app/main.py
 ```
+## 🔄 Update
+Pro aktualizaci serveru spusť:
+```bash
+bash scripts/update_instance.sh
+```
+
 
 ## 🧠 Endpoint `/ask`
 ```json
