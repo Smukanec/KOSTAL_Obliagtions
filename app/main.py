@@ -71,7 +71,7 @@ def add_knowledge():
         return jsonify({'error': 'Provide text or file'}), 400
     try:
         knowledge.add_entry(title, comment, text=text, file=file_obj)
-        memory.log_knowledge_addition(title)
+        memory.log_knowledge_addition(title, comment)
     except Exception as exc:
         return jsonify({'error': str(exc)}), 500
     return jsonify({'status': 'ok'})
