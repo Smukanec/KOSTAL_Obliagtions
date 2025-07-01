@@ -8,10 +8,14 @@
     <h1>Chat</h1>
     <form id="askForm">
         User: <input type="text" id="user" value="anon"><br>
-        Message: <input type="text" id="message" size="60"><br>
+        Endpoint: <select id="config"></select><br>
+        Question: <input type="text" id="message" size="60"><br>
         <button type="submit">Ask</button>
     </form>
+    <h3>Answer</h3>
     <pre id="response"></pre>
+    <h3>Context</h3>
+    <pre id="context"></pre>
 
     <h2>Add Knowledge</h2>
     <form id="knowledgeForm" enctype="multipart/form-data">
@@ -29,14 +33,15 @@ document.getElementById('askForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const user = document.getElementById('user').value;
     const message = document.getElementById('message').value;
+    const config = document.getElementById('config').value;
     const res = await fetch('/ask', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({user, message})
+        body: JSON.stringify({user, message, config})
     });
     const data = await res.json();
-    document.getElementById('response').textContent =
-        data.response + '\nReferences: ' + (data.references || []).join(', ');
+    document.getElementById('response').textContent = data.response || '';
+    document.getElementById('context').textContent = (data.references || []).join(', ');
 });
 
 document.getElementById('knowledgeForm').addEventListener('submit', async (e) => {
@@ -50,6 +55,21 @@ document.getElementById('knowledgeForm').addEventListener('submit', async (e) =>
     const data = await res.json();
     document.getElementById('uploadStatus').textContent = JSON.stringify(data);
 });
+
+async function loadConfigs() {
+    const res = await fetch('/configs');
+    const data = await res.json();
+    const select = document.getElementById('config');
+    Object.keys(data).forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        const cfg = data[name];
+        opt.textContent = name + (cfg.base_url ? ` - ${cfg.base_url}` : '');
+        select.appendChild(opt);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadConfigs);
 </script>
 </body>
 </html>
