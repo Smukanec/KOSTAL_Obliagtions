@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+</head>
+<body>
+<h1>Admin Config Editor</h1>
+<form id="configForm">
+    Password: <input type="password" id="password"><br>
+    <textarea id="config" rows="20" cols="80"></textarea><br>
+    <button type="submit">Save</button>
+</form>
+<pre id="status"></pre>
+<script>
+async function loadConfig(pw) {
+    const res = await fetch('/admin/config?password=' + encodeURIComponent(pw));
+    if (res.ok) {
+        const data = await res.json();
+        document.getElementById('config').value = data.config;
+    } else {
+        document.getElementById('status').textContent = 'Unauthorized';
+    }
+}
+
+document.getElementById('configForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const password = document.getElementById('password').value;
+    const config = document.getElementById('config').value;
+    const res = await fetch('/admin/config', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({password, config})
+    });
+    const data = await res.json();
+    document.getElementById('status').textContent = JSON.stringify(data);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const pw = prompt('Admin password:');
+    if (pw) {
+        document.getElementById('password').value = pw;
+        loadConfig(pw);
+    }
+});
+</script>
+</body>
+</html>
