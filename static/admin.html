@@ -14,7 +14,11 @@
 <pre id="status"></pre>
 <script>
 async function loadConfig(pw) {
-    const res = await fetch('/admin/config?password=' + encodeURIComponent(pw));
+    const res = await fetch('/admin/config', {
+        headers: {
+            'Authorization': 'Basic ' + btoa('admin:' + pw)
+        }
+    });
     if (res.ok) {
         const data = await res.json();
         document.getElementById('config').value = data.config;
@@ -29,8 +33,11 @@ document.getElementById('configForm').addEventListener('submit', async (e) => {
     const config = document.getElementById('config').value;
     const res = await fetch('/admin/config', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({password, config})
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + btoa('admin:' + password)
+        },
+        body: JSON.stringify({config})
     });
     const data = await res.json();
     document.getElementById('status').textContent = JSON.stringify(data);

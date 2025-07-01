@@ -79,25 +79,37 @@ def add_knowledge():
 
 # ---- Admin routes ----
 
-@app.route('/admin')
+@app.route('/admin', methods=['GET', 'POST'])
 def admin_page():
-    """Serve admin UI if password is correct."""
-    if request.args.get('password') != ADMIN_PASS:
-        return "Unauthorized", 401
+    """Serve admin UI if credentials are valid."""
+    password = None
+    if request.authorization:
+        password = request.authorization.password
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        password = data.get('password', password)
+    if password != ADMIN_PASS:
+        resp = app.response_class("Unauthorized", 401)
+        resp.headers['WWW-Authenticate'] = 'Basic realm="Admin"'
+        return resp
     return app.send_static_file('admin.html')
 
 
 @app.route('/admin/config', methods=['GET', 'POST'])
 def admin_config():
     """Return or update full configuration."""
+    password = None
+    if request.authorization:
+        password = request.authorization.password
     if request.method == 'GET':
-        if request.args.get('password') != ADMIN_PASS:
+        if password != ADMIN_PASS:
             return jsonify({'error': 'unauthorized'}), 401
         with open(CONFIG_PATH, 'r', encoding='utf-8') as fh:
             return jsonify({'config': fh.read()})
 
     data = request.get_json(force=True)
-    if data.get('password') != ADMIN_PASS:
+    password = data.get('password', password)
+    if password != ADMIN_PASS:
         return jsonify({'error': 'unauthorized'}), 401
 
     cfg_text = data.get('config')
