@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import json
 import os
 
-from . import api_client, memory
+from . import api_client, memory, knowledge
 
 app = Flask(__name__)
 
@@ -22,12 +22,31 @@ def ask():
     message = data.get('message')
     if not user or not message:
         return jsonify({'error': 'Missing user or message'}), 400
+    related = knowledge.search_entries(message)
     response_text = api_client.ask(message, CONFIG)
     try:
         memory.save_interaction(user, message, response_text)
     except Exception:
         pass  # Ignore memory errors
-    return jsonify({'response': response_text})
+    return jsonify({'response': response_text, 'references': [e['title'] for e in related]})
+
+
+@app.route('/knowledge/add', methods=['POST'])
+def add_knowledge():
+    title = request.form.get('title')
+    comment = request.form.get('comment', '')
+    text = request.form.get('text')
+    file_obj = request.files.get('file')
+    if not title:
+        return jsonify({'error': 'Missing title'}), 400
+    if not text and file_obj is None:
+        return jsonify({'error': 'Provide text or file'}), 400
+    try:
+        knowledge.add_entry(title, comment, text=text, file=file_obj)
+        memory.log_knowledge_addition(title)
+    except Exception as exc:
+        return jsonify({'error': str(exc)}), 500
+    return jsonify({'status': 'ok'})
 
 
 if __name__ == '__main__':

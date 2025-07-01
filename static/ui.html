@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JARVIK KOSTAL GPT</title>
+</head>
+<body>
+    <h1>Chat</h1>
+    <form id="askForm">
+        User: <input type="text" id="user" value="anon"><br>
+        Message: <input type="text" id="message" size="60"><br>
+        <button type="submit">Ask</button>
+    </form>
+    <pre id="response"></pre>
+
+    <h2>Add Knowledge</h2>
+    <form id="knowledgeForm" enctype="multipart/form-data">
+        Title: <input type="text" name="title"><br>
+        Comment: <input type="text" name="comment"><br>
+        Text:<br>
+        <textarea name="text" rows="4" cols="60"></textarea><br>
+        File: <input type="file" name="file"><br>
+        <button type="submit">Upload</button>
+    </form>
+    <pre id="uploadStatus"></pre>
+
+<script>
+document.getElementById('askForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = document.getElementById('user').value;
+    const message = document.getElementById('message').value;
+    const res = await fetch('/ask', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user, message})
+    });
+    const data = await res.json();
+    document.getElementById('response').textContent =
+        data.response + '\nReferences: ' + (data.references || []).join(', ');
+});
+
+document.getElementById('knowledgeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = document.getElementById('knowledgeForm');
+    const formData = new FormData(form);
+    const res = await fetch('/knowledge/add', {
+        method: 'POST',
+        body: formData
+    });
+    const data = await res.json();
+    document.getElementById('uploadStatus').textContent = JSON.stringify(data);
+});
+</script>
+</body>
+</html>
