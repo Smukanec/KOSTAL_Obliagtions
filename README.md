@@ -81,6 +81,20 @@ Konverzace se ukládají jako JSONL:
 {"timestamp": ..., "user": "Ahoj", "bot": "Dobrý den"}
 ```
 
+## 📚 Knowledge Base
+Struktura adresáře pro znalosti:
+```
+knowledge/
+├── entries.jsonl  # seznam všech záznamů
+└── files/         # uložené soubory
+```
+Nahrávání probíhá přes webové rozhraní v sekci **Add Knowledge**,
+kde vyplníš název, komentář a text nebo soubor. Všechna nahrání se
+logují do souboru `memory/knowledge_additions.jsonl`.
+
+Při volání `/ask` se k odpovědi vrací pole `references` obsahující
+názvy odpovídajících záznamů.
+
 ## 📎 Poznámky
 - Neobsahuje RAG vrstvu
 - Nepoužívá Ollamu ani lokální modely
