@@ -1,0 +1,5 @@
+{
+  "api_key": "sk-...",
+  "base_url": "https://gpt-api.kostal.com",
+  "model": "azure-gpt-4o"
+}
