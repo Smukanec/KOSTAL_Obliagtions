@@ -19,3 +19,15 @@ def save_interaction(user: str, user_message: str, bot_message: str) -> None:
     }
     with open(log_file, 'a', encoding='utf-8') as fh:
         fh.write(json.dumps(entry, ensure_ascii=False) + '\n')
+
+
+def log_knowledge_addition(title: str) -> None:
+    """Log knowledge additions globally with timestamp and title."""
+    os.makedirs(MEMORY_ROOT, exist_ok=True)
+    log_file = os.path.join(MEMORY_ROOT, 'knowledge_additions.jsonl')
+    entry = {
+        'timestamp': datetime.utcnow().isoformat(),
+        'title': title,
+    }
+    with open(log_file, 'a', encoding='utf-8') as fh:
+        fh.write(json.dumps(entry, ensure_ascii=False) + '\n')

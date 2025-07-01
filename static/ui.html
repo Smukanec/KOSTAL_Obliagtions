@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KOSTAL GPT</title>
+</head>
+<body>
+    <h1>Ask KOSTAL GPT</h1>
+    <form id="askForm">
+        User: <input type="text" id="user"><br>
+        Message: <input type="text" id="message"><br>
+        <button type="submit">Send</button>
+    </form>
+    <pre id="askResponse"></pre>
+
+    <h1>Add Knowledge</h1>
+    <form id="knowForm" enctype="multipart/form-data">
+        Title: <input type="text" id="kTitle" name="title"><br>
+        Comment: <input type="text" id="kComment" name="comment"><br>
+        Text:<br>
+        <textarea id="kText" name="text" rows="4" cols="50"></textarea><br>
+        File: <input type="file" id="kFile" name="file"><br>
+        <button type="submit">Upload</button>
+    </form>
+    <pre id="knowResponse"></pre>
+
+    <script>
+    document.getElementById('askForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            user: document.getElementById('user').value,
+            message: document.getElementById('message').value
+        };
+        const resp = await fetch('/ask', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        document.getElementById('askResponse').textContent = JSON.stringify(await resp.json(), null, 2);
+    });
+
+    document.getElementById('knowForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = new FormData();
+        form.append('title', document.getElementById('kTitle').value);
+        form.append('comment', document.getElementById('kComment').value);
+        form.append('text', document.getElementById('kText').value);
+        const file = document.getElementById('kFile').files[0];
+        if (file) form.append('file', file);
+        const resp = await fetch('/knowledge/add', {
+            method: 'POST',
+            body: form
+        });
+        document.getElementById('knowResponse').textContent = JSON.stringify(await resp.json(), null, 2);
+    });
+    </script>
+</body>
+</html>
