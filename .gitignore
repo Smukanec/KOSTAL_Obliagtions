@@ -1,0 +1,6 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+memory_backup/
+flask.log
+knowledge/files/
