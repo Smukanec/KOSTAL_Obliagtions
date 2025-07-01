@@ -1,10 +1,13 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 import json
 import os
 
 from . import api_client, memory, knowledge
 
 app = Flask(__name__)
+
+# Password for admin interface
+ADMIN_PASS = os.environ.get('ADMIN_PASS', 'Kostal@2025')
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.json')
 
@@ -71,6 +74,50 @@ def add_knowledge():
         memory.log_knowledge_addition(title)
     except Exception as exc:
         return jsonify({'error': str(exc)}), 500
+    return jsonify({'status': 'ok'})
+
+
+# ---- Admin routes ----
+
+@app.route('/admin')
+def admin_page():
+    """Serve admin UI if password is correct."""
+    if request.args.get('password') != ADMIN_PASS:
+        return "Unauthorized", 401
+    return app.send_static_file('admin.html')
+
+
+@app.route('/admin/config', methods=['GET', 'POST'])
+def admin_config():
+    """Return or update full configuration."""
+    if request.method == 'GET':
+        if request.args.get('password') != ADMIN_PASS:
+            return jsonify({'error': 'unauthorized'}), 401
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as fh:
+            return jsonify({'config': fh.read()})
+
+    data = request.get_json(force=True)
+    if data.get('password') != ADMIN_PASS:
+        return jsonify({'error': 'unauthorized'}), 401
+
+    cfg_text = data.get('config')
+    if cfg_text is None:
+        return jsonify({'error': 'Missing config'}), 400
+    try:
+        new_cfg = json.loads(cfg_text)
+    except json.JSONDecodeError:
+        return jsonify({'error': 'Invalid JSON'}), 400
+
+    with open(CONFIG_PATH, 'w', encoding='utf-8') as fh:
+        json.dump(new_cfg, fh, indent=2, ensure_ascii=False)
+
+    global CONFIGS
+    if isinstance(new_cfg, list):
+        CONFIGS = {c.get('name', str(i)): c for i, c in enumerate(new_cfg)}
+    elif isinstance(new_cfg, dict) and 'api_key' in new_cfg:
+        CONFIGS = {'default': new_cfg}
+    else:
+        CONFIGS = new_cfg
     return jsonify({'status': 'ok'})
 
 

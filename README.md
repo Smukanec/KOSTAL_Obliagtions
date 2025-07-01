@@ -89,3 +89,9 @@ Konverzace se ukládají jako JSONL:
 ---
 
 Webové rozhraní je dostupné na adrese `/` po spuštění serveru.
+
+## 🔐 Admin rozhraní
+Konfiguraci v `config/config.json` lze upravit na adrese `/admin`.
+Výchozí heslo je `Kostal@2025` a můžete jej změnit pomocí proměnné
+prostředí `ADMIN_PASS`. Rozhraní umožňuje měnit API klíče i model a je
+určeno pouze pro interní použití.
