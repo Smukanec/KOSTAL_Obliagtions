@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import json
 import os
 
@@ -10,9 +10,30 @@ CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.js
 
 if os.path.exists(CONFIG_PATH):
     with open(CONFIG_PATH, 'r', encoding='utf-8') as fh:
-        CONFIG = json.load(fh)
+        raw_cfg = json.load(fh)
+    if isinstance(raw_cfg, list):
+        CONFIGS = {c.get('name', str(i)): c for i, c in enumerate(raw_cfg)}
+    elif isinstance(raw_cfg, dict) and 'api_key' in raw_cfg:
+        CONFIGS = {'default': raw_cfg}
+    else:
+        CONFIGS = raw_cfg
 else:
-    CONFIG = {}
+    CONFIGS = {}
+
+
+@app.route('/')
+def index():
+    """Serve the simple UI."""
+    return app.send_static_file('ui.html')
+
+
+@app.route('/configs')
+def get_configs():
+    """Return available configurations without API keys."""
+    sanitized = {}
+    for name, cfg in CONFIGS.items():
+        sanitized[name] = {k: v for k, v in cfg.items() if k != 'api_key'}
+    return jsonify(sanitized)
 
 
 @app.route('/ask', methods=['POST'])
@@ -20,10 +41,14 @@ def ask():
     data = request.get_json(force=True)
     user = data.get('user')
     message = data.get('message')
+    cfg_name = data.get('config')
     if not user or not message:
         return jsonify({'error': 'Missing user or message'}), 400
     related = knowledge.search_entries(message)
-    response_text = api_client.ask(message, CONFIG)
+    cfg = CONFIGS.get(cfg_name)
+    if cfg is None and CONFIGS:
+        cfg = next(iter(CONFIGS.values()))
+    response_text = api_client.ask(message, cfg or {})
     try:
         memory.save_interaction(user, message, response_text)
     except Exception:

@@ -36,6 +36,13 @@ Nebo jednoduše:
 ```bash
 python3 app/main.py
 ```
+
+## 💻 Webové UI
+Po spuštění serveru otevři v prohlížeči `http://localhost:5000/`.
+Zobrazí se jednoduché rozhraní, kde zvolíš konfigurační profil,
+zadáš otázku a uvidíš odpověď i použitý kontext.
+V sekci "Add Knowledge" můžeš nahrát text nebo soubor s komentářem.
+
 ## 🔄 Update
 Pro aktualizaci serveru spusť:
 ```bash
@@ -81,4 +88,4 @@ Konverzace se ukládají jako JSONL:
 
 ---
 
-Pokud chceš přidat UI (`ui.html`), stačí otevřít `/static/ui.html` nebo připojit route v `Flask`.
+Webové rozhraní je dostupné na adrese `/` po spuštění serveru.
