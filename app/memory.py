@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 from datetime import datetime
 
 MEMORY_ROOT = os.path.join(os.path.dirname(__file__), '..', 'memory')
@@ -10,6 +11,8 @@ KNOWLEDGE_LOG = os.path.join(MEMORY_ROOT, 'knowledge_additions.jsonl')
 
 def save_interaction(user: str, user_message: str, bot_message: str) -> None:
     """Append a conversation entry for given user."""
+    # Sanitize user string to avoid directory traversal
+    user = re.sub(r"[^A-Za-z0-9_]+", "", user)
     user_dir = os.path.join(MEMORY_ROOT, user)
     os.makedirs(user_dir, exist_ok=True)
     log_file = os.path.join(user_dir, 'private.jsonl')
