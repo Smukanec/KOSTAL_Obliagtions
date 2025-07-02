@@ -18,6 +18,22 @@ alias python3='/c/Path/To/python.exe'
 The startup scripts now try `python`, `python3` or `py` in this order, so as
 long as one of these commands exists the server will launch correctly.
 
+### Starting on Windows
+Use `start.bat` from the project root to launch the server. If you created a
+virtual environment, activate it first:
+
+```cmd
+call venv\Scripts\activate.bat
+start.bat
+```
+
+The batch file stops any process already listening on port `5000` and runs the
+Flask app in the current window. Stop it with `Ctrl+C` or by closing the
+terminal. Run `start.bat` again or `scripts\update_instance.bat` to restart the
+server.
+For an update and automatic restart use `scripts\update_instance.bat`. It pulls
+the latest code, installs dependencies and then starts the server again.
+
 ## 📁 Struktura
 ```
 jarvik-kostal/
