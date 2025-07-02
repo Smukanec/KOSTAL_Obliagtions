@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+# Detect available Python interpreter
+PYTHON=$(command -v python3 || command -v python || command -v py)
+if [ -z "$PYTHON" ]; then
+    echo "Python interpreter not found." >&2
+    exit 1
+fi
+
 # Determine the directory this script lives in and switch to the
 # repository root so relative paths work regardless of where the
 # script is invoked from.
@@ -24,6 +31,6 @@ if [ -n "$pids" ]; then
 fi
 
 # Start the Flask server
-nohup python3 app/main.py > flask.log 2>&1 &
+nohup "$PYTHON" app/main.py > flask.log 2>&1 &
 
 echo "Server started."
