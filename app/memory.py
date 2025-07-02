@@ -25,6 +25,24 @@ def save_interaction(user: str, user_message: str, bot_message: str) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + '\n')
 
 
+def load_interactions(user: str) -> list:
+    """Return list of conversation entries for given user."""
+    # Sanitize user string to avoid directory traversal
+    user = re.sub(r"[^A-Za-z0-9_]+", "", user)
+    log_file = os.path.join(MEMORY_ROOT, user, 'private.jsonl')
+    if not os.path.exists(log_file):
+        return []
+
+    entries = []
+    with open(log_file, 'r', encoding='utf-8') as fh:
+        for line in fh:
+            try:
+                entries.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return entries
+
+
 def log_knowledge_addition(title: str, comment: str) -> None:
     """Log a knowledge entry creation."""
     os.makedirs(MEMORY_ROOT, exist_ok=True)
