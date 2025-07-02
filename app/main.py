@@ -7,7 +7,9 @@ from . import api_client, memory, knowledge
 app = Flask(__name__)
 
 # Password for admin interface
-ADMIN_PASS = os.environ.get('ADMIN_PASS', 'Kostal@2025')
+ADMIN_PASS = os.environ.get('ADMIN_PASS')
+if not ADMIN_PASS:
+    raise SystemExit('ADMIN_PASS environment variable is required')
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.json')
 

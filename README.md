@@ -58,10 +58,12 @@ jarvik-kostal/
 ## 🚀 Spuštění
 ```bash
 export FLASK_APP=app/main.py
+export ADMIN_PASS=mojeheslo
 flask run
 ```
-Nebo jednoduše:
+Nebo jednoduše (nezapomeň nastavit heslo):
 ```bash
+export ADMIN_PASS=mojeheslo
 python3 app/main.py
 ```
 
@@ -134,8 +136,8 @@ Webové rozhraní je dostupné na adrese `/` po spuštění serveru.
 
 ## 🔐 Admin rozhraní
 Konfiguraci v `config/config.json` lze upravit na adrese `/admin`.
-Heslo pro přístup se nastavuje proměnnou prostředí `ADMIN_PASS`
-(výchozí hodnota `Kostal@2025` je určena jen pro lokální testování).
+Heslo pro přístup se nastavuje proměnnou prostředí `ADMIN_PASS` a
+server se nespustí, pokud není proměnná nastavena.
 Pro ověření se používá HTTP Basic Auth nebo odeslání hesla v těle POST
 požadavku. Rozhraní umožňuje měnit API klíče i model a je určeno pouze
 pro interní použití. Příklad načtení konfigurace pomocí `curl`:
