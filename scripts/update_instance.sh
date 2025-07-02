@@ -35,7 +35,7 @@ fi
 git pull
 
 # Install dependencies
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 
 # Restart Flask server
 nohup python3 app/main.py > flask.log 2>&1 &
