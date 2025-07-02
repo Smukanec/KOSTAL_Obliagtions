@@ -6,6 +6,18 @@ Tento projekt je odlehčená verze Jarvika, navržená pro běh v prostředí be
 - Python 3.9+
 - `pip install flask langchain openai`
 
+## Windows notes
+Scripts expect an executable named `python3`. If that command isn't available
+on Windows you can either add Python to your `PATH` or create an alias in your
+`~/.bashrc`:
+
+```bash
+alias python3='/c/Path/To/python.exe'
+```
+
+The startup scripts now try `python`, `python3` or `py` in this order, so as
+long as one of these commands exists the server will launch correctly.
+
 ## 📁 Struktura
 ```
 jarvik-kostal/
