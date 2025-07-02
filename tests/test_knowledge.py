@@ -3,6 +3,7 @@ import sys
 import json
 import io
 import types
+import pytest
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -84,3 +85,12 @@ def test_add_entry_with_file_and_search(tmp_path, monkeypatch):
     by_comment = knowledge.search_entries("File comment")
     assert any(e.get("path") == entry["path"] for e in by_title)
     assert any(e.get("path") == entry["path"] for e in by_comment)
+
+
+def test_add_entry_requires_text_or_file(tmp_path, monkeypatch):
+    entries = _setup_paths(tmp_path, monkeypatch)
+
+    with pytest.raises(ValueError):
+        knowledge.add_entry("Empty", "No content")
+
+    assert not entries.exists()
