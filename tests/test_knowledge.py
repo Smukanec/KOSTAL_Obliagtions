@@ -94,3 +94,14 @@ def test_add_entry_requires_text_or_file(tmp_path, monkeypatch):
         knowledge.add_entry("Empty", "No content")
 
     assert not entries.exists()
+
+
+def test_search_entries_respects_limit(tmp_path, monkeypatch):
+    entries = _setup_paths(tmp_path, monkeypatch)
+
+    for i in range(3):
+        knowledge.add_entry(f"Doc{i}", "Same comment", text="foo")
+
+    results = knowledge.search_entries("Same comment", limit=1)
+    assert len(results) == 1
+    assert results[0]["title"] == "Doc0"
