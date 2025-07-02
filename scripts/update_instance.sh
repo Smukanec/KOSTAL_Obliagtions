@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Determine the directory this script lives in and switch to the
+# repository root so relative paths work regardless of where the
+# script is invoked from.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR/.."
+
 # Stop any running Flask server on port 5000
 pids=""
 if command -v lsof >/dev/null; then
