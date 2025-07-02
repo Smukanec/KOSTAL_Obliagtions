@@ -105,3 +105,14 @@ def test_search_entries_respects_limit(tmp_path, monkeypatch):
     results = knowledge.search_entries("Same comment", limit=1)
     assert len(results) == 1
     assert results[0]["title"] == "Doc0"
+
+
+def test_search_entries_custom_limit(tmp_path, monkeypatch):
+    """search_entries should not return more than the requested limit."""
+    _setup_paths(tmp_path, monkeypatch)
+
+    for i in range(2):
+        knowledge.add_entry(f"LimitDoc{i}", "Limit comment", text="foo")
+
+    results = knowledge.search_entries("Limit comment", limit=1)
+    assert len(results) <= 1
