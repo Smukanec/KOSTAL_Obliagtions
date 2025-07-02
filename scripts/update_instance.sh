@@ -2,13 +2,19 @@
 set -e
 
 # Stop any running Flask server on port 5000
+pids=""
 if command -v lsof >/dev/null; then
-    pids=$(lsof -t -i:5000) || true
-    if [ -n "$pids" ]; then
-        kill -9 $pids || true
-    fi
+    pids=$(lsof -t -i:5000 2>/dev/null) || true
+elif command -v fuser >/dev/null; then
+    pids=$(fuser 5000/tcp 2>/dev/null | sed 's/.*://; s/^ *//') || true
+elif command -v netstat >/dev/null; then
+    pids=$(netstat -lntp 2>/dev/null | awk '$4 ~ /:5000$/ && $6 == "LISTEN" {split($7,a,"/"); print a[1]}') || true
 else
-    fuser -k 5000/tcp || true
+    echo "Warning: no tool available to detect processes on port 5000" >&2
+fi
+
+if [ -n "$pids" ]; then
+    kill -9 $pids || true
 fi
 
 # Backup memory folder
