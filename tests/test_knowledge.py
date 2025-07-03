@@ -116,3 +116,38 @@ def test_search_entries_custom_limit(tmp_path, monkeypatch):
 
     results = knowledge.search_entries("Limit comment", limit=1)
     assert len(results) <= 1
+
+
+def test_add_entry_with_category_and_search(tmp_path, monkeypatch):
+    entries = _setup_paths(tmp_path, monkeypatch)
+
+    data = io.BytesIO(b"content")
+    fs = FileStorage(stream=data, filename="manual.pdf")
+    knowledge.add_entry(
+        "Manual", "Manual comment", file=fs, category="manuals"
+    )
+
+    line = entries.read_text(encoding="utf-8").strip()
+    entry = json.loads(line)
+    assert entry["category"] == "manuals"
+    assert entry["path"].startswith("files/manuals/")
+    saved_path = tmp_path / "kn" / entry["path"]
+    assert saved_path.is_file()
+
+    results = knowledge.search_entries("Manual", category="manuals")
+    assert any(e.get("path") == entry["path"] for e in results)
+
+
+def test_search_entries_filter_by_category(tmp_path, monkeypatch):
+    _setup_paths(tmp_path, monkeypatch)
+
+    knowledge.add_entry("A", "same", text="foo", category="c1")
+    knowledge.add_entry("B", "same", text="foo", category="c2")
+
+    all_results = knowledge.search_entries("same")
+    assert len(all_results) == 2
+
+    c1_results = knowledge.search_entries("same", category="c1")
+    assert len(c1_results) == 1
+    assert c1_results[0]["category"] == "c1"
+
