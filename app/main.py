@@ -68,6 +68,7 @@ def ask():
 def add_knowledge():
     title = request.form.get('title')
     comment = request.form.get('comment', '')
+    category = request.form.get('category')
     text = request.form.get('text')
     file_obj = request.files.get('file')
     if not title:
@@ -75,7 +76,9 @@ def add_knowledge():
     if not text and file_obj is None:
         return jsonify({'error': 'Provide text or file'}), 400
     try:
-        knowledge.add_entry(title, comment, text=text, file=file_obj)
+        knowledge.add_entry(
+            title, comment, text=text, file=file_obj, category=category
+        )
         memory.log_knowledge_addition(title, comment)
     except Exception as exc:
         return jsonify({'error': str(exc)}), 500

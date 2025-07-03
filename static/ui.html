@@ -21,6 +21,7 @@
     <form id="knowledgeForm" enctype="multipart/form-data">
         Title: <input type="text" name="title"><br>
         Comment: <input type="text" name="comment"><br>
+        Category: <input type="text" name="category"><br>
         Text:<br>
         <textarea name="text" rows="4" cols="60"></textarea><br>
         File: <input type="file" name="file"><br>
@@ -48,6 +49,8 @@ document.getElementById('knowledgeForm').addEventListener('submit', async (e) =>
     e.preventDefault();
     const form = document.getElementById('knowledgeForm');
     const formData = new FormData(form);
+        const category = form.querySelector('input[name="category"]').value;
+    formData.append("category", category);
     const res = await fetch('/knowledge/add', {
         method: 'POST',
         body: formData
