@@ -61,7 +61,15 @@ def ask():
         memory.save_interaction(user, message, response_text)
     except Exception:
         pass  # Ignore memory errors
-    return jsonify({'response': response_text, 'references': [e['title'] for e in related]})
+    refs = [
+        {
+            'title': e.get('title'),
+            'category': e.get('category'),
+            'comment': e.get('comment'),
+        }
+        for e in related
+    ]
+    return jsonify({'response': response_text, 'references': refs})
 
 
 @app.route('/knowledge/add', methods=['POST'])

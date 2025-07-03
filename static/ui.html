@@ -42,7 +42,12 @@ document.getElementById('askForm').addEventListener('submit', async (e) => {
     });
     const data = await res.json();
     document.getElementById('response').textContent = data.response || '';
-    document.getElementById('context').textContent = (data.references || []).join(', ');
+    const ctx = (data.references || []).map(r => {
+        const cat = r.category ? ` [${r.category}]` : '';
+        const comment = r.comment ? ` - ${r.comment}` : '';
+        return `${r.title}${cat}${comment}`;
+    }).join('\n');
+    document.getElementById('context').textContent = ctx;
 });
 
 document.getElementById('knowledgeForm').addEventListener('submit', async (e) => {
