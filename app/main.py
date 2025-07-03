@@ -4,7 +4,10 @@ import os
 
 from . import api_client, memory, knowledge
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder=os.path.join(os.path.dirname(__file__), '..', 'static'),
+)
 
 # Password for admin interface
 ADMIN_PASS = os.environ.get('ADMIN_PASS')
