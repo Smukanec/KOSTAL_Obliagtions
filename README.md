@@ -18,6 +18,17 @@ alias python3='/c/Path/To/python.exe'
 The startup scripts now try `python`, `python3` or `py` in this order, so as
 long as one of these commands exists the server will launch correctly.
 
+## Creating a virtual environment
+To keep dependencies isolated you can create and activate a virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate.bat
+pip install -r requirements.txt
+```
+
+Before running `python app/main.py` make sure the environment variable `ADMIN_PASS` is set.
+
 ### Starting on Windows
 Use `start.bat` from the project root to launch the server. If you created a
 virtual environment, activate it first:
