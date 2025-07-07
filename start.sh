@@ -8,6 +8,12 @@ if [ -z "$PYTHON" ]; then
     exit 1
 fi
 
+# Ensure admin password is provided
+if [ -z "$ADMIN_PASS" ]; then
+    echo "ADMIN_PASS not defined – set it before running" >&2
+    exit 1
+fi
+
 # Determine the directory this script lives in and switch to the
 # repository root so relative paths work regardless of where the
 # script is invoked from.

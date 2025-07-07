@@ -1,6 +1,12 @@
 @echo off
 setlocal
 
+rem Ensure admin password is provided
+if not defined ADMIN_PASS (
+    echo ADMIN_PASS not defined – set it before running
+    exit /b 1
+)
+
 rem Navigate to project root
 cd /d "%~dp0.."
 
