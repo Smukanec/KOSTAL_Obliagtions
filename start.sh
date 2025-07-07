@@ -14,29 +14,33 @@ if [ -z "$ADMIN_PASS" ]; then
     exit 1
 fi
 
+# Use provided port or default to 5000
+PORT=${PORT:-5000}
+export PORT
+
 # Determine the directory this script lives in and switch to the
 # repository root so relative paths work regardless of where the
 # script is invoked from.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR/.."
 
-# Stop any running Flask server on port 5000
+# Stop any running Flask server on port $PORT
 pids=""
 if command -v lsof >/dev/null; then
-    pids=$(lsof -t -i:5000 2>/dev/null) || true
+    pids=$(lsof -t -i:"$PORT" 2>/dev/null) || true
 elif command -v fuser >/dev/null; then
-    pids=$(fuser 5000/tcp 2>/dev/null | sed 's/.*://; s/^ *//') || true
+    pids=$(fuser "$PORT"/tcp 2>/dev/null | sed 's/.*://; s/^ *//') || true
 elif command -v netstat >/dev/null; then
-    pids=$(netstat -lntp 2>/dev/null | awk '$4 ~ /:5000$/ && $6 == "LISTEN" {split($7,a,"/"); print a[1]}') || true
+    pids=$(netstat -lntp 2>/dev/null | awk -v p=":$PORT$" '$4 ~ p && $6 == "LISTEN" {split($7,a,"/"); print a[1]}') || true
 else
-    echo "Warning: no tool available to detect processes on port 5000" >&2
+    echo "Warning: no tool available to detect processes on port $PORT" >&2
 fi
 
 if [ -n "$pids" ]; then
     kill -9 $pids || true
 fi
 
-# Start the Flask server
+# Start the Flask server on the chosen port
 nohup "$PYTHON" app/main.py > flask.log 2>&1 &
 
 echo "Server started."

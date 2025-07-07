@@ -38,7 +38,8 @@ call venv\Scripts\activate.bat
 start.bat
 ```
 
-The batch file stops any process already listening on port `5000` and runs the
+The batch file stops any process already listening on the port defined by
+the `PORT` variable (default `5000`) and runs the
 Flask app in the current window. Stop it with `Ctrl+C` or by closing the
 terminal. Run `start.bat` again or `scripts\update_instance.bat` to restart the
 server.
@@ -79,7 +80,8 @@ python3 app/main.py
 ```
 
 ## 💻 Webové UI
-Po spuštění serveru otevři v prohlížeči `http://localhost:5000/`.
+Po spuštění serveru otevři v prohlížeči `http://localhost:$PORT/`.
+Výchozí port je `5000` a lze jej změnit proměnnou prostředí `PORT`.
 Zobrazí se jednoduché rozhraní, kde zvolíš konfigurační profil,
 zadáš otázku a uvidíš odpověď i použitý kontext.
 V sekci "Add Knowledge" můžeš nahrát text nebo soubor s komentářem.
@@ -153,5 +155,5 @@ Pro ověření se používá HTTP Basic Auth nebo odeslání hesla v těle POST
 požadavku. Rozhraní umožňuje měnit API klíče i model a je určeno pouze
 pro interní použití. Příklad načtení konfigurace pomocí `curl`:
 ```bash
-curl -u admin:$ADMIN_PASS http://localhost:5000/admin/config
+curl -u admin:$ADMIN_PASS http://localhost:$PORT/admin/config
 ```
