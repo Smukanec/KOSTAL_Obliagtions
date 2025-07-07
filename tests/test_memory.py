@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import json
+import builtins
 from pathlib import Path
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -71,3 +72,19 @@ def test_load_interactions_missing_file(tmp_path, monkeypatch):
 
     loaded = memory.load_interactions("nosuchuser")
     assert loaded == []
+
+
+def test_save_interaction_logs_error(tmp_path, monkeypatch, capsys):
+    root = tmp_path / "mem"
+    monkeypatch.setattr(memory, "MEMORY_ROOT", str(root))
+    monkeypatch.setattr(memory, "KNOWLEDGE_LOG", os.path.join(str(root), "knowledge_additions.jsonl"))
+
+    def bad_open(*args, **kwargs):
+        raise OSError("boom")
+
+    monkeypatch.setattr(builtins, "open", bad_open)
+
+    memory.save_interaction("bob", "hi", "there")
+
+    captured = capsys.readouterr()
+    assert "boom" in captured.err.lower()
