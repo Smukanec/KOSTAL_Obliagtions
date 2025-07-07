@@ -3,6 +3,7 @@
 import json
 import os
 import re
+import sys
 from datetime import datetime
 
 MEMORY_ROOT = os.path.join(os.path.dirname(__file__), '..', 'memory')
@@ -21,8 +22,11 @@ def save_interaction(user: str, user_message: str, bot_message: str) -> None:
         'user': user_message,
         'bot': bot_message,
     }
-    with open(log_file, 'a', encoding='utf-8') as fh:
-        fh.write(json.dumps(entry, ensure_ascii=False) + '\n')
+    try:
+        with open(log_file, 'a', encoding='utf-8') as fh:
+            fh.write(json.dumps(entry, ensure_ascii=False) + '\n')
+    except Exception as exc:  # noqa: BLE001 - log then ignore
+        print(f"Failed to save interaction: {exc}", file=sys.stderr)
 
 
 def load_interactions(user: str) -> list:
