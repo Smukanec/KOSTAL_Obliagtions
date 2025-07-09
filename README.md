@@ -11,6 +11,8 @@ The batch scripts search for `python`, `python3` or `py` and use the first one
 found. Ensure at least one of these commands is available in your `PATH` so the
 server can start correctly.
 
+See [docs/windows-http-setup.md](docs/windows-http-setup.md) for a detailed Windows setup.
+
 ## Creating a virtual environment
 To keep dependencies isolated you can create and activate a virtual environment:
 
