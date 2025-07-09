@@ -154,3 +154,75 @@ pro interní použití. Příklad načtení konfigurace pomocí `curl`:
 ```bash
 curl -u admin:$ADMIN_PASS http://localhost:$PORT/admin/config
 ```
+
+## 🌐 Reverse proxy
+To expose the application over HTTPS you can place an Nginx or Apache
+server in front of the Flask app. Run the Flask server locally on port `80`
+(or change `PORT` if needed) and let the reverse proxy listen on ports `80`
+and `443` for incoming traffic.
+
+### Nginx example
+Install Nginx and create a new server block:
+
+```nginx
+server {
+    listen 80;
+    server_name example.com;
+    location / {
+        proxy_pass http://127.0.0.1:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name example.com;
+    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    location / {
+        proxy_pass http://127.0.0.1:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+Enable HTTPS certificates with Certbot:
+```bash
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d example.com
+```
+
+### Apache example
+Enable the required modules and create a virtual host:
+
+```bash
+sudo a2enmod proxy proxy_http ssl
+```
+
+```apache
+<VirtualHost *:80>
+    ServerName example.com
+    ProxyPass / http://127.0.0.1:80/
+    ProxyPassReverse / http://127.0.0.1:80/
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName example.com
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/example.com/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/example.com/privkey.pem
+    ProxyPass / http://127.0.0.1:80/
+    ProxyPassReverse / http://127.0.0.1:80/
+</VirtualHost>
+```
+
+Acquire and install TLS certificates:
+```bash
+sudo apt install certbot python3-certbot-apache
+sudo certbot --apache -d example.com
+```
+
+These snippets forward all requests to the locally running Flask app and
+serve HTTPS on port `443`.
