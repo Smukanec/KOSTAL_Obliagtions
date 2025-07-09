@@ -1,5 +1,20 @@
 @echo off
-setlocal
+setlocal EnableDelayedExpansion
+
+rem Detect available Python interpreter
+set "PYTHON="
+for %%P in (python python3 py) do (
+    where %%P >nul 2>&1 && (
+        set "PYTHON=%%P"
+        goto :found_python
+    )
+)
+echo Python interpreter not found.
+exit /b 1
+:found_python
+
+rem Use provided port or default to 5000
+if not defined PORT set PORT=5000
 
 rem Ensure admin password is provided
 if not defined ADMIN_PASS (
@@ -15,14 +30,14 @@ if exist "venv\Scripts\activate.bat" (
     call "venv\Scripts\activate.bat"
 )
 
-rem Terminate any process using port 5000
-for /f "tokens=5" %%P in ('netstat -ano ^| findstr :5000') do (
+rem Terminate any process using the chosen port
+for /f "tokens=5" %%P in ('netstat -ano ^| findstr :%PORT%') do (
     taskkill /F /PID %%P >nul 2>&1
 )
 
 rem Launch the Flask server
 cd app
-python main.py > ..\flask.log 2>&1
+%PYTHON% main.py > ..\flask.log 2>&1
 cd ..
 
 endlocal
