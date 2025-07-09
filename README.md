@@ -32,10 +32,11 @@ start.bat
 ```
 
 The batch file stops any process already listening on the port defined by
-the `PORT` variable (default `5000`) and runs the
+the `PORT` variable (default `80`) and runs the
 Flask app in the current window. Stop it with `Ctrl+C` or by closing the
 terminal. Run `start.bat` again or `scripts\update_instance.bat` to restart the
 server.
+Binding to ports below 1024 may require running the script as Administrator.
 For an update and automatic restart use `scripts\update_instance.bat`. It pulls
 the latest code, installs dependencies and then starts the server again.
 
@@ -74,7 +75,8 @@ python3 app/main.py
 
 ## 💻 Webové UI
 Po spuštění serveru otevři v prohlížeči `http://localhost:$PORT/`.
-Výchozí port je `5000` a lze jej změnit proměnnou prostředí `PORT`.
+Výchozí port je `80` a lze jej změnit proměnnou prostředí `PORT` (např. `PORT=443`).
+Při použití portů pod 1024 může být nutné spustit server s administrátorskými právy.
 Zobrazí se jednoduché rozhraní, kde zvolíš konfigurační profil,
 zadáš otázku a uvidíš odpověď i použitý kontext.
 V sekci "Add Knowledge" můžeš nahrát text nebo soubor s komentářem.
