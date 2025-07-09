@@ -14,9 +14,15 @@ if [ -z "$ADMIN_PASS" ]; then
     exit 1
 fi
 
-# Use provided port or default to 5000
-PORT=${PORT:-5000}
+# Use provided port or default to 80
+PORT=${PORT:-80}
 export PORT
+
+# Require root privileges for ports under 1024
+if [ "$PORT" -lt 1024 ] && [ "$(id -u)" -ne 0 ]; then
+    echo "Insufficient privileges to bind to port $PORT. Run as root or choose a higher port." >&2
+    exit 1
+fi
 
 # Determine the directory this script lives in and switch to the
 # repository root so relative paths work regardless of where the

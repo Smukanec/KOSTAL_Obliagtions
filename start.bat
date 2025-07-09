@@ -13,8 +13,18 @@ echo Python interpreter not found.
 exit /b 1
 :found_python
 
-rem Use provided port or default to 5000
-if not defined PORT set PORT=5000
+rem Use provided port or default to 80
+if not defined PORT set PORT=80
+
+rem Require administrative privileges for ports under 1024
+for /f "tokens=1" %%A in ("%PORT%") do set PORT_NUM=%%A
+if %PORT_NUM% lss 1024 (
+    net session >nul 2>&1
+    if errorlevel 1 (
+        echo Insufficient privileges to bind to port %PORT_NUM%. Run as administrator or choose a higher port.
+        exit /b 1
+    )
+)
 
 rem Ensure admin password is provided
 if not defined ADMIN_PASS (
