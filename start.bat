@@ -32,8 +32,8 @@ if not defined ADMIN_PASS (
     exit /b 1
 )
 
-rem Navigate to project root
-cd /d "%~dp0.."
+rem Navigate to repository root (the directory this script lives in)
+cd /d "%~dp0"
 
 rem Activate virtual environment if present
 if exist "venv\Scripts\activate.bat" (
